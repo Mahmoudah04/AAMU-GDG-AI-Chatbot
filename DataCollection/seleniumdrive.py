@@ -2,6 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import os
 import time as t
 import pandas as pd
@@ -84,55 +86,27 @@ subjects = [
 ]
 
 #Helper functions
-def parse_table(table, course):
+def parse_table(table):
     data= []
     isheader = True
     headers = [th.text for th in table.find_elements(By.TAG_NAME, 'th')]
     rows = table.find_elements(By.TAG_NAME, 'tr')
     for row in rows:
         cols = row.find_elements(By.TAG_NAME, 'td')
-        if cols and len(cols) > 2:
+        if cols:
             data.append([col.text for col in cols])
             if len(cols) != len(headers) and isheader:
                 isheader = False
-    if isheader:
-        df = pd.DataFrame(data, columns=headers or None)
-    else:
-        df = pd.DataFrame(data)
-    print(df)
-    df.to_csv(f"DataCollection/{subjects[0]}{course}.csv", index=False)
-    t.sleep(5)
-
-def click_table(table):
-    rows = table.find_elements(By.TAG_NAME, 'tr')
-    for row in rows:
-        cols = row.find_elements(By.TAG_NAME, 'td')
-        if cols:
-            if cols[2].tag_name.lower()== "form":
-                try:
-                    cols[2].submit()
-                    t.sleep(1)
-                    try:
-                        table = driver.find_element(By.XPATH, '/html/body/div[3]/table')
-                        parse_table(table, cols[0].text)
-                    except:
-                        print("Error getting the table")
-                    t.sleep(2)
-                    driver.back()
-                    t.sleep(1)
-                    
-                except:
-                    print("Error clicking the link")
-                #Get the table again after clicking the link
-            else:
-                continue
+    return isheader ,headers, data
             
 #-------------------------------------------------------------------------------------------------------------
 options = Options()
 PROFILE_PATH = os.path.join(os.getcwd(), "DataCollection", "profile")
 options.add_argument(f"user-data-dir={PROFILE_PATH}")
 driver = webdriver.Chrome(options=options)
-driver.get('https://sdo.aamu.edu/?saml=4934255a-6b58-4db4-8c3f-981f6f7dfad5')
+wait = WebDriverWait(driver, 10)
+#-------------------------------------------------------------------------------------------------------------
+driver.get('https://sdo.aamu.edu/?saml=ec92d9a4-a8c0-4a35-ab43-59188a4655ce')
 t.sleep(20)
 driver.find_element(By.XPATH, '/html/body/div[1]/div[2]/span/map/table/tbody/tr[1]/td/table/tbody/tr/td[3]/a').click()
 t.sleep(5)
@@ -147,15 +121,29 @@ driver.find_element(By.XPATH, '/html/body/div[3]/form/input[2]').click()
 t.sleep(2)
 #------------------------------------------------------------------------------------------------------------
 #Where the fun begins. Get the list of all the courses in the dropdown menu and select each one.
-dropdown2 = Select(driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody/tr/td/select'))
-dropdown2.select_by_visible_text(subjects[0])
-t.sleep(1)
-driver.find_element(By.XPATH, '/html/body/div[3]/form/input[17]').click()
-#Get Courses for a selected subject. 
-table = driver.find_element(By.XPATH, '/html/body/div[3]/table[2]')
-parse_table(table)
-
-
-
+for i in range(len(subjects)):
+    dropdown2 = Select(wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[3]/form/table/tbody/tr/td/select'))))
+    dropdown2.select_by_visible_text(subjects[i])
+    submit_btn =wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[3]/form/input[17]')))
+    submit_btn.click()
+    #Get Courses for a selected subject. 
+    try:
+        table = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[3]/table[2]')))
+    except:
+        print(f"No courses found for {subjects[i]}")
+        driver.back()
+        wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[3]/form/table/tbody/tr/td/select')))
+        continue
+    else:
+        isheader ,headers, data = parse_table(table)
+        if isheader:
+            df = pd.DataFrame(data, columns=headers or None)
+        else:
+            df = pd.DataFrame(data)
+        print(df)
+        df.to_csv(f"DataCollection/{subjects[i]}.csv", index=False)
+        #Go back to the previous page to select the next subject.
+        driver.back()
+        wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[3]/form/table/tbody/tr/td/select')))
 driver.quit()
 print("Done")

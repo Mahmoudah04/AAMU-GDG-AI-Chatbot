@@ -1,0 +1,9 @@
+[20048:19240:0420/195039.131:INFO:chrome_browser_cloud_management_controller.cc(202)] No machine level policy manager exists.
+[25928:18896:0420/195039.252:INFO:cpu_info.cc(53)] Available number of cores: 12
+[11652:28148:0420/195039.265:INFO:cpu_info.cc(53)] Available number of cores: 12
+[33200:33880:0420/195039.355:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)
+[7992:31980:0420/195039.679:INFO:cpu_info.cc(53)] Available number of cores: 12
+[13268:35292:0420/195039.704:INFO:cpu_info.cc(53)] Available number of cores: 12
+[20048:19240:0420/195039.844:INFO:CONSOLE(3051)] "Uncaught (in promise) Error: Request failed with status code 404", source: https://sdo.aamu.edu/bundle.da26484b.js (3051)
+[23076:9844:0420/195043.716:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.
+[23076:9844:0420/195043.716:WARNING:sqlite_persistent_store_backend_base.cc(176)] Failed to post task from FlushAndNotifyInBackground@net\extras\sqlite\sqlite_persistent_store_backend_base.cc:226 to client_task_runner_.

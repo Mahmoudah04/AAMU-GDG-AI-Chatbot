@@ -1,0 +1,9 @@
+[1760:29676:0421/180127.943:INFO:chrome_browser_cloud_management_controller.cc(202)] No machine level policy manager exists.
+[2312:22380:0421/180128.311:INFO:cpu_info.cc(53)] Available number of cores: 12
+[30656:16340:0421/180128.315:INFO:cpu_info.cc(53)] Available number of cores: 12
+[30676:1844:0421/180128.461:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)
+[27320:6120:0421/180129.219:INFO:cpu_info.cc(53)] Available number of cores: 12
+[27500:3236:0421/180129.366:INFO:cpu_info.cc(53)] Available number of cores: 12
+[1760:13536:0421/180258.033:INFO:rlz_lib.cc(443)] Attempting to send RLZ ping brand=VDKB
+[1760:13536:0421/180258.087:INFO:rlz_lib.cc(452)] Succeeded in sending RLZ ping
+[30844:33388:0421/180328.131:VERBOSE1:viz_main_impl.cc(85)] VizNullHypothesis is disabled (not a warning)

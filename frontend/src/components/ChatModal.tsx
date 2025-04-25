@@ -1,50 +1,54 @@
-import { useState, useRef, useEffect } from 'react';
-import { X, Send } from 'lucide-react';
-import { useChat } from '../contexts/ChatContext';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client"
+
+import type React from "react"
+
+import { useState, useRef, useEffect } from "react"
+import { X, Send, Loader2 } from "lucide-react"
+import { useChat } from "../contexts/ChatContext"
+import { motion, AnimatePresence } from "framer-motion"
 
 const ChatModal = () => {
-  const { messages, addMessage, isOpen, toggleChat } = useChat();
-  const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { messages, addMessage, isOpen, toggleChat, isLoading } = useChat()
+  const [inputValue, setInputValue] = useState("")
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (inputValue.trim()) {
-      addMessage(inputValue, 'user');
-      setInputValue('');
+    e.preventDefault()
+    if (inputValue.trim() && !isLoading) {
+      addMessage(inputValue, "user")
+      setInputValue("")
     }
-  };
+  }
 
   // Scroll to bottom of messages when new ones arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   // Focus input when chat opens
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
+        inputRef.current?.focus()
+      }, 100)
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   const modalVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
       y: 20,
-      scale: 0.95
+      scale: 0.95,
     },
-    visible: { 
+    visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         duration: 0.2,
-        ease: 'easeOut'
-      }
+        ease: "easeOut",
+      },
     },
     exit: {
       opacity: 0,
@@ -52,21 +56,21 @@ const ChatModal = () => {
       scale: 0.95,
       transition: {
         duration: 0.2,
-        ease: 'easeIn'
-      }
-    }
-  };
+        ease: "easeIn",
+      },
+    },
+  }
 
   const messageVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
-        duration: 0.3
-      }
-    }
-  };
+        duration: 0.3,
+      },
+    },
+  }
 
   return (
     <AnimatePresence>
@@ -87,7 +91,7 @@ const ChatModal = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">Course Assistant</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">University Registration Helper</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Alabama A&M University Helper</p>
                 </div>
               </div>
               <button
@@ -107,31 +111,49 @@ const ChatModal = () => {
                   variants={messageVariants}
                   initial="hidden"
                   animate="visible"
-                  className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl p-3 ${
-                      msg.type === 'user'
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm'
+                      msg.type === "user"
+                        ? "bg-primary-600 text-white"
+                        : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm"
                     }`}
                   >
                     <p>{msg.text}</p>
                     <div
                       className={`text-xs mt-1 ${
-                        msg.type === 'user' ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'
+                        msg.type === "user" ? "text-primary-100" : "text-gray-500 dark:text-gray-400"
                       }`}
                     >
-                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </div>
                   </div>
                 </motion.div>
               ))}
+              {isLoading && (
+                <motion.div
+                  variants={messageVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="flex justify-start"
+                >
+                  <div className="max-w-[80%] rounded-2xl p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 size={16} className="animate-spin text-primary-600 dark:text-primary-400" />
+                      <p className="text-gray-500 dark:text-gray-400">Thinking...</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <form
+              onSubmit={handleSubmit}
+              className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+            >
               <div className="flex items-center space-x-2">
                 <input
                   ref={inputRef}
@@ -140,13 +162,14 @@ const ChatModal = () => {
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Type your question..."
                   className="flex-1 p-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
+                  disabled={isLoading}
                 />
                 <button
                   type="submit"
                   className="p-3 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!inputValue.trim()}
+                  disabled={!inputValue.trim() || isLoading}
                 >
-                  <Send size={20} />
+                  {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                 </button>
               </div>
               <div className="mt-2 text-center">
@@ -159,7 +182,7 @@ const ChatModal = () => {
         </div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default ChatModal;
+export default ChatModal
